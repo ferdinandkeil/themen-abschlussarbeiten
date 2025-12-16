@@ -292,7 +292,7 @@ def write_topic_markdown(topic: Topic, out_md: pathlib.Path) -> None:
 
 
 def topic_list_item(topic: Topic) -> str:
-    href = f"{BASE_PATH.rstrip('/')}/topics/{topic.number}-{topic.slug}.html"
+    href = f"{BASE_PATH}/topics/{topic.number}-{topic.slug}.html"
     bits = []
     if topic.degree:
         bits.append(topic.degree)
