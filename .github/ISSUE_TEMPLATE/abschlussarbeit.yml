@@ -1,0 +1,41 @@
+name: Abschlussarbeitsthema
+description: Neues Thema anlegen
+labels: ["topic", "status:open"]
+body:
+  - type: input
+    id: degree
+    attributes:
+      label: Abschluss
+      placeholder: BSc oder MSc
+    validations:
+      required: true
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Kurzbeschreibung
+    validations:
+      required: true
+
+  - type: textarea
+    id: tasks
+    attributes:
+      label: Aufgaben
+      value: |
+        - 
+        - 
+
+  - type: textarea
+    id: prereq
+    attributes:
+      label: Voraussetzungen
+
+  - type: textarea
+    id: meta
+    attributes:
+      label: Metadaten (optional)
+      value: |
+        ---
+        start: ab sofort
+        tags: [embedded]
+        ---
