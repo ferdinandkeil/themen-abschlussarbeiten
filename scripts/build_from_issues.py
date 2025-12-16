@@ -253,11 +253,11 @@ def write_topic_markdown(topic: Topic, out_md: pathlib.Path) -> None:
 
     meta_lines = [
         "---",
-        f'title: "{topic.title.replace(\'"\', "\'")}"',
+        f'title: "{topic.title.replace('"', '\'')}"',
         f'number: {topic.number}',
         f'degree: "{topic.degree}"',
         f'status: "{topic.status}"',
-        f'tags: [{", ".join([f\'"{t}"\' for t in topic.tags])}]',
+        f'tags: [{tags_str}]',
         f'github: "{topic.url}"',
         "---",
         "",
