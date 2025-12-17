@@ -249,7 +249,8 @@ def write_topic_markdown(topic: Topic, out_md: pathlib.Path) -> None:
     """
     out_md.parent.mkdir(parents=True, exist_ok=True)
 
-    tags_str = ", ".join(topic.tags)
+    tags_str = ", ".join([f'"{t.replace(chr(34), chr(39))}"' for t in topic.tags])
+    tags_pretty = ", ".join(topic.tags)
 
     meta_lines = [
         "---",
@@ -274,14 +275,31 @@ def write_topic_markdown(topic: Topic, out_md: pathlib.Path) -> None:
         info_bits.append(f"<strong>Start:</strong> {html.escape(topic.start)}")
     if topic.prereq:
         info_bits.append(f"<strong>Voraussetzungen:</strong> {html.escape(topic.prereq)}")
-    if tags_str:
-        info_bits.append(f"<strong>Tags:</strong> {html.escape(tags_str)}")
+    if tags_pretty:
+        info_bits.append(f"<strong>Tags:</strong> {html.escape(tags_pretty)}")
 
     # GitHub link is markdown (Pandoc turns it into <a>)
     info_bits.append(f"[Auf GitHub ansehen]({topic.url})")
 
+    # CSS-Klassen konsistent zum Index (<li class="status-open degree-bsc ...">)
+    classes: List[str] = ["topic-meta-card"]
+
+    status_cls = slugify((topic.status or "").strip().lower())
+    if status_cls:
+        classes.append(f"status-{status_cls}")
+
+    degree_cls = slugify((topic.degree or "").strip().lower())
+    if degree_cls:
+        classes.append(f"degree-{degree_cls}")
+
+    # Optional: Tag-Klassen auch auf der Detailseite (praktisch für spätere Filter/Badges)
+    for t in topic.tags:
+        tt = slugify((t or "").strip().lower())
+        if tt:
+            classes.append(f"tag-{tt}")
+
     info_block = (
-        '<div class="topic-meta">\n'
+        f'<div class="{" ".join(classes)}">\n'
         + "<br>\n".join(info_bits)
         + "\n</div>"
     )
@@ -293,16 +311,40 @@ def write_topic_markdown(topic: Topic, out_md: pathlib.Path) -> None:
 
 def topic_list_item(topic: Topic) -> str:
     href = f"{BASE_PATH.rstrip('/')}/topics/{topic.number}-{topic.slug}.html"
+
+    classes: List[str] = []
+
+    # status-* (open/taken/draft/...)
+    status = (topic.status or "").strip().lower()
+    if status:
+        classes.append(f"status-{slugify(status)}")
+
+    # degree-* (bsc/msc/...)
+    degree = (topic.degree or "").strip().lower()
+    if degree:
+        classes.append(f"degree-{slugify(degree)}")
+
+    # Optional: tag-* Klassen (wenn du später per CSS/JS filtern willst)
+    # Achtung: kann viele Klassen erzeugen; wenn du das nicht willst, einfach auskommentiert lassen.
+    for t in topic.tags:
+        tt = (t or "").strip().lower()
+        if tt:
+            classes.append(f"tag-{slugify(tt)}")
+
+    class_attr = f' class="{" ".join(classes)}"' if classes else ""
+
+    # Meta-Text (wie bisher), nur ohne Klammern geht es oft cleaner:
     bits = []
     if topic.degree:
         bits.append(topic.degree)
     if topic.status:
-        bits.append(topic.status)
+        bits.append("offen" if topic.status == "open" else ("vergeben" if topic.status == "taken" else topic.status))
     if topic.tags:
         bits.append(", ".join(topic.tags))
-    meta = "; ".join(bits)
-    meta_html = f' <small>({html.escape(meta)})</small>' if meta else ""
-    return f'<li><a href="{href}">{html.escape(topic.title)}</a>{meta_html}</li>'
+    meta = " · ".join(bits)
+    meta_html = f' <small>{html.escape(meta)}</small>' if meta else ""
+
+    return f'<li{class_attr}><a href="{href}">{html.escape(topic.title)}</a>{meta_html}</li>'
 
 
 def build_index(topics: List[Topic], index_template: pathlib.Path) -> None:

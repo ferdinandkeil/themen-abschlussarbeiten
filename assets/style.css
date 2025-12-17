@@ -1,328 +1,170 @@
-/* ==========================================
-   FerdinandKeil – minimal academic UI
-   ========================================== */
+/* Base: Water.css (classless) */
+@import url("https://cdn.jsdelivr.net/npm/water.css@2/out/water.css");
 
-/* --- Design tokens --- */
-:root {
-  --bg: #ffffff;
-  --surface: #f6f7f9;
-  --surface-2: #eef1f5;
-  --text: #121417;
-  --muted: #505862;
-  --border: #d9dde3;
+/* --- Tuning-Variablen (Water nutzt teils CSS-Variablen; wir setzen nur Fallbacks) --- */
+:root{
+  --card-radius: 14px;
+  --card-shadow: 0 10px 30px rgba(0,0,0,.08);
+  --card-shadow-hover: 0 14px 45px rgba(0,0,0,.12);
 
-  --accent: #1b4ddb;     /* calm blue */
-  --accent-2: #0f2f8a;
+  --border: var(--border, rgba(0,0,0,.12));
+  --background: var(--background, #f6f6f6);
+  --background-body: var(--background-body, #fff);
+  --text-muted: var(--text-muted, #666);
+  --focus: var(--focus, rgba(0, 102, 204, .25));
 
-  --shadow: 0 10px 30px rgba(18, 20, 23, 0.08);
-  --shadow-sm: 0 6px 18px rgba(18, 20, 23, 0.06);
-
-  --radius: 14px;
-  --radius-sm: 10px;
-
-  --maxw: 980px;
-
-  --code-bg: #f1f3f6;
-
-  --link: var(--accent);
-  --link-hover: var(--accent-2);
-
-  --focus: 0 0 0 4px rgba(27, 77, 219, 0.18);
+  /* Status-Akzentfarben */
+  --status-open-accent: rgb(0, 160, 80);
+  --status-taken-accent: rgba(0,0,0,.35);
+  --status-draft-accent: rgb(0, 110, 200);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0c0f14;
-    --surface: #121720;
-    --surface-2: #171e2a;
-    --text: #e8edf5;
-    --muted: #a9b3c2;
-    --border: #263043;
-
-    --accent: #7aa2ff;
-    --accent-2: #b8ccff;
-
-    --shadow: 0 14px 40px rgba(0, 0, 0, 0.35);
-    --shadow-sm: 0 10px 26px rgba(0, 0, 0, 0.25);
-
-    --code-bg: #0f141d;
-
-    --focus: 0 0 0 4px rgba(122, 162, 255, 0.22);
-  }
+/* --- Header/Seitenstruktur etwas “ruhiger” --- */
+header{
+  margin: 1.5rem 0 1.25rem;
+  padding-bottom: .75rem;
+  border-bottom: 1px solid var(--border);
+}
+main > p:first-of-type{
+  color: var(--text-muted);
 }
 
-/* --- Base / Reset --- */
-*,
-*::before,
-*::after { box-sizing: border-box; }
-
-html { font-size: 16px; }
-
-body {
-  margin: 0;
-  color: var(--text);
-  background: radial-gradient(1200px 700px at 15% -10%, rgba(27, 77, 219, 0.08), transparent 55%),
-              radial-gradient(900px 600px at 100% 0%, rgba(27, 77, 219, 0.06), transparent 60%),
-              var(--bg);
-  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  line-height: 1.65;
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-}
-
-/* --- Layout --- */
-header {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-
-  backdrop-filter: blur(10px);
-  background: color-mix(in srgb, var(--bg) 82%, transparent);
-  border-bottom: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
-
-  padding: 0.85rem 0;
-}
-
-header a {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.65rem;
-  text-decoration: none;
-  font-weight: 700;
-  letter-spacing: 0.2px;
-  color: var(--text);
-}
-
-header a::before {
-  content: "";
-  width: 10px;
-  height: 10px;
-  border-radius: 999px;
-  background: var(--accent);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 20%, transparent);
-}
-
-main {
-  max-width: var(--maxw);
-  margin: 0 auto;
-  padding: 1.25rem 1rem 3.5rem 1rem;
-}
-
-@media (min-width: 900px) {
-  main { padding-top: 2rem; }
-}
-
-/* --- Typography --- */
-h1, h2, h3, h4 {
-  line-height: 1.25;
-  margin: 2.0rem 0 0.6rem 0;
-  letter-spacing: -0.02em;
-}
-
-h1 {
-  font-size: clamp(1.85rem, 2.8vw, 2.35rem);
-  margin-top: 1.25rem;
-}
-
-h2 {
-  font-size: clamp(1.25rem, 1.8vw, 1.45rem);
-  padding-bottom: 0.35rem;
-  border-bottom: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
-}
-
-h3 { font-size: 1.1rem; }
-h4 { font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
-
-p { margin: 0.6rem 0 1.0rem 0; color: color-mix(in srgb, var(--text) 92%, var(--muted)); }
-
-small { color: var(--muted); }
-
-/* --- Links & focus --- */
-a { color: var(--link); text-decoration: none; }
-a:hover { color: var(--link-hover); text-decoration: underline; }
-
-a:focus-visible {
-  outline: none;
-  box-shadow: var(--focus);
-  border-radius: 8px;
-}
-
-/* --- Lists as cards (Index) --- */
-ul {
+/* --- Themenliste als Cards: passt zu <ul><li><a>…</a> <small>…</small></li></ul> --- */
+main ul{
   list-style: none;
-  margin: 0.8rem 0 1.75rem 0;
-  padding: 0;
-  display: grid;
-  gap: 0.75rem;
-}
-
-li {
+  padding-left: 0;
   margin: 0;
-  padding: 0;
 }
 
-li > a {
-  display: block;
-  padding: 0.95rem 1rem;
-  border-radius: var(--radius);
-  border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
-  background: color-mix(in srgb, var(--surface) 92%, transparent);
-  box-shadow: var(--shadow-sm);
-  transition: transform 120ms ease, box-shadow 160ms ease, border-color 160ms ease;
+main ul > li{
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+  padding: 1rem 1.1rem;
+  margin: 0 0 1rem 0;
+
+  /* sorgt dafür, dass Link+Meta schön untereinander stehen können */
+  display: flex;
+  flex-direction: column;
+  gap: .35rem;
+
+  /* Status-Akzent (default: keiner) */
+  border-left: 6px solid transparent;
+}
+
+main ul > li:hover{
+  box-shadow: var(--card-shadow-hover);
+}
+
+/* Link als “Card-Titel” */
+main ul > li > a{
+  font-size: 1.15rem;
+  font-weight: 700;
   text-decoration: none;
-  color: var(--text);
-  font-weight: 650;
+  color: inherit;
+  line-height: 1.25;
 }
 
-li > a:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow);
-  border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
+main ul > li > a:hover{
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Fokus sichtbar (Tastatur) */
+main ul > li > a:focus{
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+  border-radius: calc(var(--card-radius) + 2px);
+}
+
+/* Meta-Zeile */
+main ul > li > small{
+  color: var(--text-muted);
+  font-size: .95rem;
+}
+
+/* --- Status-Styling (Index-Cards) --- */
+main ul > li.status-open{
+  border-left-color: var(--status-open-accent);
+}
+main ul > li.status-open > small{
+  color: color-mix(in srgb, var(--status-open-accent) 80%, var(--text-muted));
+}
+
+main ul > li.status-taken{
+  border-left-color: var(--status-taken-accent);
+  opacity: .9;
+}
+main ul > li.status-taken > a{
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+  text-decoration-color: rgba(0,0,0,.25);
+}
+
+main ul > li.status-draft{
+  border-left-color: var(--status-draft-accent);
+}
+
+/* --- Detailseiten: Meta-Card (aus Generator: <div class="topic-meta-card status-open ...">) --- */
+.topic-meta-card{
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+  padding: .9rem 1.1rem;
+  margin: 0 0 1.25rem 0;
+  font-size: .95rem;
+
+  border-left: 6px solid transparent;
+}
+
+/* Wenn du im Generator noch "topic-meta" drin hast, bleib kompatibel */
+.topic-meta{
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+  padding: .9rem 1.1rem;
+  margin: 0 0 1.25rem 0;
+  font-size: .95rem;
+
+  border-left: 6px solid transparent;
+}
+
+.topic-meta-card.status-open,
+.topic-meta.status-open{
+  border-left-color: var(--status-open-accent);
+}
+.topic-meta-card.status-taken,
+.topic-meta.status-taken{
+  border-left-color: var(--status-taken-accent);
+  opacity: .95;
+}
+.topic-meta-card.status-draft,
+.topic-meta.status-draft{
+  border-left-color: var(--status-draft-accent);
+}
+
+/* Links im Meta-Block unaufdringlich */
+.topic-meta-card a,
+.topic-meta a{
   text-decoration: none;
 }
-
-li > a:active {
-  transform: translateY(0);
+.topic-meta-card a:hover,
+.topic-meta a:hover{
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
-li small {
-  display: inline-block;
-  margin: 0.35rem 0 0 0;
-  padding: 0.25rem 0.55rem;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--surface-2) 88%, transparent);
-  border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
-  color: var(--muted);
-  font-weight: 550;
-  font-size: 0.82rem;
-}
-
-/* If index template contains nested elements, keep them tidy */
-li a + small { margin-left: 0.35rem; }
-
-/* --- Topic meta box (Detail pages) --- */
-.topic-meta {
-  margin: 1.25rem 0 1.6rem 0;
-  padding: 1rem 1.05rem;
-  border-radius: var(--radius);
-  background: linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--surface) 92%, transparent),
-      color-mix(in srgb, var(--surface-2) 88%, transparent)
-  );
-  border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
-  box-shadow: var(--shadow-sm);
-  position: relative;
-}
-
-.topic-meta::before {
-  content: "";
-  position: absolute;
-  left: 0.9rem;
-  top: 0.95rem;
-  width: 10px;
-  height: 10px;
-  border-radius: 999px;
-  background: var(--accent);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 20%, transparent);
-  opacity: 0.9;
-}
-
-.topic-meta {
-  padding-left: 2.2rem;
-}
-
-.topic-meta strong {
-  font-weight: 750;
-  color: var(--text);
-}
-
-.topic-meta a {
-  font-weight: 650;
-}
-
-/* --- Horizontal rule --- */
-hr {
-  border: none;
-  border-top: 1px solid color-mix(in srgb, var(--border) 75%, transparent);
-  margin: 2.2rem 0;
-}
-
-/* --- Tables (if you use them later) --- */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 1rem 0 1.75rem 0;
-  border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
-  border-radius: var(--radius);
-  overflow: hidden;
-  background: color-mix(in srgb, var(--surface) 92%, transparent);
-}
-
-th, td {
-  padding: 0.7rem 0.8rem;
-  border-bottom: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
-  text-align: left;
-  vertical-align: top;
-}
-
-th {
-  font-size: 0.9rem;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--muted);
-  background: color-mix(in srgb, var(--surface-2) 90%, transparent);
-}
-
-/* --- Code --- */
-code {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  font-size: 0.95em;
-  background: var(--code-bg);
-  padding: 0.12em 0.35em;
-  border-radius: 8px;
-  border: 1px solid color-mix(in srgb, var(--border) 65%, transparent);
-}
-
-pre {
-  background: var(--code-bg);
-  padding: 1rem 1rem;
-  overflow-x: auto;
-  border-radius: var(--radius);
-  border: 1px solid color-mix(in srgb, var(--border) 65%, transparent);
-  box-shadow: var(--shadow-sm);
-}
-
-/* --- Blockquotes (nice for notes) --- */
-blockquote {
-  margin: 1.25rem 0;
-  padding: 0.85rem 1rem;
-  border-left: 4px solid color-mix(in srgb, var(--accent) 70%, transparent);
-  background: color-mix(in srgb, var(--surface) 88%, transparent);
-  border-radius: var(--radius-sm);
-  color: color-mix(in srgb, var(--text) 88%, var(--muted));
-}
-
-/* --- Images (if you add them later) --- */
-img {
-  max-width: 100%;
-  border-radius: var(--radius);
-}
-
-/* --- Footer (if used) --- */
-footer {
-  margin-top: 3rem;
-  padding-top: 1.25rem;
-  border-top: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
-  color: var(--muted);
-  font-size: 0.92rem;
-}
-
-/* --- Print --- */
-@media print {
-  header { position: static; backdrop-filter: none; }
-  body { background: #fff; }
-  li > a { box-shadow: none; }
-  .topic-meta, pre { box-shadow: none; }
-  a { text-decoration: none; color: #000; }
+/* --- Optional: 2-Spalten-Layout ab Desktopbreite --- */
+@media (min-width: 900px){
+  main ul{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  main ul > li{
+    margin: 0; /* grid gap übernimmt Abstand */
+  }
 }
