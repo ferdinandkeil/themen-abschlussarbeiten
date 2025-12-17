@@ -72,9 +72,11 @@ def extract_first_image(md: str) -> str:
         return m.group(1).strip()
     return ""
 
-def strip_first_markdown_image(md: str) -> str:
-    # entfernt nur das erste Markdown-Bild, damit es nicht doppelt erscheint
-    return IMG_MD_RE.sub("", md or "", count=1).lstrip()
+def strip_first_image(md: str) -> str:
+    # entfernt nur das erste Bild, damit es nicht doppelt erscheint
+    md = IMG_MD_RE.sub("", md or "", count=1).lstrip()
+    md = IMG_HTML_RE.sub("", md, count=1).lstrip()
+    return md
 
 
 def run_pandoc(input_md: pathlib.Path, output_html: pathlib.Path, template_html: pathlib.Path, title: str) -> None:
@@ -449,7 +451,7 @@ def main() -> None:
         img = extract_first_image(t.body_markdown)
         if img:
             t.image = img
-            t.body_markdown = strip_first_markdown_image(t.body_markdown)
+            t.body_markdown = strip_first_image(t.body_markdown)
 
         topics.append(t)
 
