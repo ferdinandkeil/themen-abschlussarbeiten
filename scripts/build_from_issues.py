@@ -44,6 +44,7 @@ class Topic:
     prereq: str = ""
     body_markdown: str = ""
     closed: bool = False
+    image: str = ""
 
 
 def _die(msg: str) -> None:
@@ -57,6 +58,23 @@ def slugify(s: str) -> str:
     s = re.sub(r"[\s_-]+", "-", s)
     s = re.sub(r"^-+|-+$", "", s)
     return s or "thema"
+
+
+IMG_MD_RE = re.compile(r'!\[[^\]]*\]\(([^)\s]+)(?:\s+"[^"]*")?\)')
+IMG_HTML_RE = re.compile(r'<img[^>]+src=["\']([^"\']+)["\']', re.IGNORECASE)
+
+def extract_first_image(md: str) -> str:
+    m = IMG_MD_RE.search(md or "")
+    if m:
+        return m.group(1).strip()
+    m = IMG_HTML_RE.search(md or "")
+    if m:
+        return m.group(1).strip()
+    return ""
+
+def strip_first_markdown_image(md: str) -> str:
+    # entfernt nur das erste Markdown-Bild, damit es nicht doppelt erscheint
+    return IMG_MD_RE.sub("", md or "", count=1).lstrip()
 
 
 def run_pandoc(input_md: pathlib.Path, output_html: pathlib.Path, template_html: pathlib.Path, title: str) -> None:
@@ -298,6 +316,14 @@ def write_topic_markdown(topic: Topic, out_md: pathlib.Path) -> None:
         if tt:
             classes.append(f"tag-{tt}")
 
+    hero = ""
+    if topic.image:
+        hero = (
+            f'<figure class="topic-hero">'
+            f'<img src="{html.escape(topic.image)}" alt="Bild zum Thema: {html.escape(topic.title)}" loading="lazy">'
+            f'</figure>\n\n'
+        )
+
     info_block = (
         f'<div class="{" ".join(classes)}">\n'
         + "<br>\n".join(info_bits)
@@ -305,7 +331,7 @@ def write_topic_markdown(topic: Topic, out_md: pathlib.Path) -> None:
     )
 
     body = (topic.body_markdown or "").strip()
-    full = f"{header}\n# {topic.title}\n\n{info_block}\n\n---\n\n{body}\n"
+    full = f"{header}\n# {topic.title}\n\n{hero}{info_block}\n\n---\n\n{body}\n"
     out_md.write_text(full, encoding="utf-8")
 
 
@@ -418,6 +444,12 @@ def main() -> None:
 
         if isinstance(meta, dict) and meta:
             merge_meta(t, meta)
+
+        # Auto-detect image from issue body (first image wins)
+        img = extract_first_image(t.body_markdown)
+        if img:
+            t.image = img
+            t.body_markdown = strip_first_markdown_image(t.body_markdown)
 
         topics.append(t)
 

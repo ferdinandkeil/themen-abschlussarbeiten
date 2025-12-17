@@ -119,40 +119,22 @@ main ul > li.status-draft{
   border-left: 6px solid transparent;
 }
 
-/* Wenn du im Generator noch "topic-meta" drin hast, bleib kompatibel */
-.topic-meta{
-  background: var(--background);
-  border: 1px solid var(--border);
-  border-radius: var(--card-radius);
-  box-shadow: var(--card-shadow);
-  padding: .9rem 1.1rem;
-  margin: 0 0 1.25rem 0;
-  font-size: .95rem;
-
-  border-left: 6px solid transparent;
-}
-
-.topic-meta-card.status-open,
-.topic-meta.status-open{
+.topic-meta-card.status-open{
   border-left-color: var(--status-open-accent);
 }
-.topic-meta-card.status-taken,
-.topic-meta.status-taken{
+.topic-meta-card.status-taken{
   border-left-color: var(--status-taken-accent);
   opacity: .95;
 }
-.topic-meta-card.status-draft,
-.topic-meta.status-draft{
+.topic-meta-card.status-draft{
   border-left-color: var(--status-draft-accent);
 }
 
 /* Links im Meta-Block unaufdringlich */
-.topic-meta-card a,
-.topic-meta a{
+.topic-meta-card a{
   text-decoration: none;
 }
-.topic-meta-card a:hover,
-.topic-meta a:hover{
+.topic-meta-card a:hover{
   text-decoration: underline;
   text-underline-offset: 3px;
 }
@@ -167,4 +149,24 @@ main ul > li.status-draft{
   main ul > li{
     margin: 0; /* grid gap übernimmt Abstand */
   }
+}
+
+/* --- Thema-Detailseite: Hero-Bild --- */
+main ul > li > img.topic-thumb{
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: calc(var(--card-radius) - 2px);
+  border: 1px solid var(--border);
+  margin-bottom: .25rem;
+}
+
+.topic-hero{ margin: 0 0 1rem 0; }
+.topic-hero > img{
+  width: 100%;
+  max-height: 320px;
+  object-fit: cover;
+  border-radius: var(--card-radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--card-shadow);
 }
