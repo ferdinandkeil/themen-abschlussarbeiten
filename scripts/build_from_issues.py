@@ -61,7 +61,7 @@ def slugify(s: str) -> str:
 
 
 IMG_MD_RE = re.compile(r'!\[[^\]]*\]\(([^)\s]+)(?:\s+"[^"]*")?\)')
-IMG_HTML_RE = re.compile(r'<img[^>]+src=["\']([^"\']+)["\']', re.IGNORECASE)
+IMG_HTML_RE = re.compile(r'<img[^>]+src=["\']([^"\']+)["\'][^>]*/?>', re.IGNORECASE)
 
 def extract_first_image(md: str) -> str:
     m = IMG_MD_RE.search(md or "")
