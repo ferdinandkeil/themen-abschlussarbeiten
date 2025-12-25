@@ -154,7 +154,7 @@ def labels_to_fields(labels: List[dict]) -> Tuple[str, str, List[str]]:
                 tags.append(t)
 
     # normalization
-    degree = degree.replace("bsc", "BSc").replace("msc", "MSc")
+    degree = degree.replace("bachelor", "Bachelorarbeit").replace("master", "Masterprojekt").replace("seminar", "Studienarbeit")
     status = status.lower()
     return degree, status, sorted(set(tags), key=str.lower)
 
@@ -288,7 +288,7 @@ def write_topic_markdown(topic: Topic, out_md: pathlib.Path) -> None:
     # Build a meta info box as HTML (safe-escaped)
     info_bits: List[str] = []
     if topic.degree:
-        info_bits.append(f"<strong>Abschluss:</strong> {html.escape(topic.degree)}")
+        info_bits.append(f"<strong>Geeignet für:</strong> {html.escape(topic.degree)}")
     if topic.status:
         info_bits.append(f"<strong>Status:</strong> {html.escape(topic.status)}")
     if topic.start:
