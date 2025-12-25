@@ -131,8 +131,8 @@ def fetch_issues(repo: str, label: str, token: Optional[str]) -> List[dict]:
     return issues
 
 
-def labels_to_fields(labels: List[dict]) -> Tuple[str, str, List[str]]:
-    degree = ""
+def labels_to_fields(labels: List[dict]) -> Tuple[List[str], str, List[str]]:
+    degree: List[str] = []
     status = ""
     tags: List[str] = []
     for lab in labels:
@@ -141,7 +141,12 @@ def labels_to_fields(labels: List[dict]) -> Tuple[str, str, List[str]]:
 
         # degree labels like degree:BSc / degree:MSc
         if low.startswith("degree:"):
-            degree = name.split(":", 1)[1].strip()
+            degree.append(
+                name.split(":", 1)[1].strip()
+                .replace("bachelor", "Bachelorarbeit")
+                .replace("master", "Masterprojekt")
+                .replace("seminar", "Studienarbeit")
+            )
 
         # status labels like status:open/status:taken/status:draft
         if low.startswith("status:"):
@@ -154,8 +159,8 @@ def labels_to_fields(labels: List[dict]) -> Tuple[str, str, List[str]]:
                 tags.append(t)
 
     # normalization
-    degree = degree.replace("bachelor", "Bachelorarbeit").replace("master", "Masterprojekt").replace("seminar", "Studienarbeit")
     status = status.lower()
+    degree = ", ".join(sorted(set(degree), key=str.lower))
     return degree, status, sorted(set(tags), key=str.lower)
 
 
