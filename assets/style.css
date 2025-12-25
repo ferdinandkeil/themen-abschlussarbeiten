@@ -15,8 +15,8 @@
 
   /* Status-Akzentfarben */
   --status-open-accent: rgb(0, 160, 80);
-  --status-taken-accent: rgba(0,0,0,.35);
-  --status-draft-accent: rgb(0, 110, 200);
+  --status-taken-accent: rgb(199, 17, 159);
+  --status-finished-accent: rgb(99, 99, 99);
 }
 
 /* --- Header/Seitenstruktur etwas “ruhiger” --- */
@@ -126,8 +126,8 @@ main ul > li.status-draft{
   border-left-color: var(--status-taken-accent);
   opacity: .95;
 }
-.topic-meta-card.status-draft{
-  border-left-color: var(--status-draft-accent);
+.topic-meta-card.status-finished{
+  border-left-color: var(--status-finished-accent);
 }
 
 /* Links im Meta-Block unaufdringlich */

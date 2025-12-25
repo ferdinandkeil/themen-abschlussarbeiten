@@ -43,7 +43,6 @@ class Topic:
     start: str = ""
     prereq: str = ""
     body_markdown: str = ""
-    closed: bool = False
     image: str = ""
 
 
@@ -59,9 +58,18 @@ def slugify(s: str) -> str:
     s = re.sub(r"^-+|-+$", "", s)
     return s or "thema"
 
+def translate_status(status: str) -> str:
+    mapping = {
+        "open": "offen",
+        "taken": "vergeben",
+        "finished": "abgeschlossen",
+    }
+    return mapping.get(status.lower(), status)
+
 
 IMG_MD_RE = re.compile(r'!\[[^\]]*\]\(([^)\s]+)(?:\s+"[^"]*")?\)')
 IMG_HTML_RE = re.compile(r'<img[^>]+src=["\']([^"\']+)["\'][^>]*/?>', re.IGNORECASE)
+
 
 def extract_first_image(md: str) -> str:
     m = IMG_MD_RE.search(md or "")
@@ -71,6 +79,7 @@ def extract_first_image(md: str) -> str:
     if m:
         return m.group(1).strip()
     return ""
+
 
 def strip_first_image(md: str) -> str:
     # entfernt nur das erste Bild, damit es nicht doppelt erscheint
@@ -238,9 +247,6 @@ def merge_meta(topic: Topic, meta: Dict[str, Any]) -> None:
 
 
 def topic_is_open(topic: Topic) -> bool:
-    # Closed issues are archive unless explicitly status:open
-    if topic.closed and topic.status != "open":
-        return False
     return topic.status == "open"
 
 
@@ -295,7 +301,7 @@ def write_topic_markdown(topic: Topic, out_md: pathlib.Path) -> None:
     if topic.degree:
         info_bits.append(f"<strong>Geeignet für:</strong> {html.escape(topic.degree)}")
     if topic.status:
-        info_bits.append(f"<strong>Status:</strong> {html.escape(topic.status)}")
+        info_bits.append(f"<strong>Status:</strong> {html.escape(translate_status(topic.status))}")
     if topic.start:
         info_bits.append(f"<strong>Start:</strong> {html.escape(topic.start)}")
     if topic.prereq:
@@ -371,7 +377,7 @@ def topic_list_item(topic: Topic) -> str:
     if topic.degree:
         bits.append(topic.degree)
     if topic.status:
-        bits.append("offen" if topic.status == "open" else ("vergeben" if topic.status == "taken" else topic.status))
+        bits.append(translate_status(topic.status))
     if topic.tags:
         bits.append(", ".join(topic.tags))
     meta = " · ".join(bits)
@@ -433,9 +439,8 @@ def main() -> None:
         meta, body_rest = split_frontmatter(body)
 
         closed = bool(it.get("closed_at"))
-        # default status if not present:
-        # open issue -> open, closed issue -> taken
-        default_status = "open" if not closed else "taken"
+        if closed and status != "finished":
+            status = "finished"
 
         t = Topic(
             number=number,
@@ -443,10 +448,9 @@ def main() -> None:
             slug=slugify(title),
             url=it.get("html_url") or "",
             degree=degree,
-            status=status or default_status,
+            status=status or "open",
             tags=tags,
             body_markdown=body_rest,
-            closed=closed,
         )
 
         if isinstance(meta, dict) and meta:
